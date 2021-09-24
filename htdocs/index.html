@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>拍手しました / Sent the clap.</title>
+  <style>
+    .container {
+      margin: 0 auto;
+      max-width: 720px;
+      text-align: center;
+    }
+
+    .emoji {
+      font-size: 6em;
+    }
+
+    .graph {
+      max-width: 720px;
+    }
+
+    .powerdby {
+      font-size: .85em;
+    }
+
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/tippy.js@3/dist/tippy.all.min.js"></script>
+  <script>
+    function draw(elementId, url, serviceName) {
+      let graph = document.getElementById(elementId);
+      fetch(url)
+        .then(response => response.text())
+        .then(text => {
+          graph.innerHTML = text;
+          tippy('.each-day', {
+            arrow: true,
+            content: function (reference) {
+              const item = document.createElement('div');
+              if (serviceName) {
+                item.appendChild(document.createTextNode(`${reference.getAttribute('data-date')} / ${reference.getAttribute('data-count')}${reference.getAttribute('data-unit')} via ${serviceName}.`));
+              } else {
+                item.appendChild(document.createTextNode(`${reference.getAttribute('data-date')} / ${reference.getAttribute('data-count')}${reference.getAttribute('data-unit')}.`));
+              }
+              return item;
+            }
+          });
+        })
+        .catch(/* ignore */);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      draw('pixela-graph', 'https://pixe.la/v1/users/slime-hatena/graphs/webclap');
+
+      let param = location.search.substring(1);
+      if (param) {
+        var items = param.split('&');
+        var params = [];
+        for (i = 0; i < items.length; i++) {
+          var paramItem = items[i].split('=');
+          params[paramItem[0]] = paramItem[1];
+        }
+      }
+
+      if (params && params.source) {
+        if (params.source == 'github') {
+          draw('pixela-graph-category', 'https://pixe.la/v1/users/slime-hatena/graphs/webclap-github', 'GitHub');
+        } else if (params.source == 'twitter') {
+          draw('pixela-graph-category', 'https://pixe.la/v1/users/slime-hatena/graphs/webclap-twitter', 'Twitter');
+        } else {
+          console.error(`Undefined source: ${params.source}`);
+        }
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="emoji">&#128079;</div>
+    <div class="graph" id="pixela-graph"></div>
+    <div class="graph" id="pixela-graph-category"></div>
+    <div>
+      <p>拍手ありがとうございます！ とても嬉しいです！<br>
+        Thanks for the clap! You made my day.</p>
+    </div>
+    <div>
+      <button onClick="window.location.reload(true);">もっと送る / Send more.</button>
+    </div>
+
+    <div class="powerdby">
+      <p><a href="https://slime-hatena.jp">@Slime_hatena</a> / <a href="https://twitter.com/Slime_hatena">Twitter</a> /
+        <a href="https://github.com/slime-hatena">GitHub</a>
+      </p>
+      <p>Powered by <a href="https://pixe.la/" target="_blank">Pixela</a>.<br>
+        This page was inspired by <a href="http://www.webclap.com/" target="_blank">Web拍手</a>.</p>
+    </div>
+  </div>
+
+</body>
+
+</html>
